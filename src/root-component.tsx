@@ -8,95 +8,103 @@
  * @format
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
   StatusBar,
   StyleSheet,
   useColorScheme,
   View,
-  TouchableHighlight,
-  FlatList,
-} from 'react-native';
-import {Header, ListItem} from '@rneui/themed';
-import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {useQuery, gql} from '@apollo/client';
 
-import {AllPeopleQueryResult} from './__generated__/graphql';
+} from 'react-native';
+import { Button, Header } from '@rneui/themed';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
+import { gql, useQuery } from '@apollo/client';
+
+import Quiz from './components/Quiz';
+import { Person, Planet } from './__generated__/graphql';
+import { Text } from '@rneui/base';
+
+const PEOPLE_QUERY = gql`
+{
+  allPeople {
+    people {
+      name
+      id
+      homeworld {
+        name
+        id
+      }
+    }
+  }
+}
+`
+
+const PLANET_QUERY = gql` 
+{
+    allPlanets {
+            planets {
+              id
+              name
+            }
+          }
+        }
+`
 
 const App = () => {
+  const [quizStarted, setQuizStarted] = useState<boolean>(false);
   const isDarkMode = useColorScheme() === 'dark';
+
+  const { data: peopleData, loading: peopleQueryLoading} = useQuery(PEOPLE_QUERY);
+  const { data: planetsData, loading: planetsQueryLoading} = useQuery(PLANET_QUERY);
+
+  const peopleArray: Person[] = peopleData?.allPeople?.people;
+  const planetsArray: Planet[] = planetsData?.allPlanets?.planets;
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    flex: 1,
   };
 
-  const {data, loading}: AllPeopleQueryResult = useQuery(gql`
-    {
-      allPeople {
-        edges {
-          node {
-            id
-            name
-          }
-        }
-      }
-    }
-  `);
+  const renderQuiz = () => {
+    return (
+        <View>
+          {quizStarted ? <Quiz peopleArray={peopleArray} planetsArray={planetsArray} /> : null}
+        </View>
+    )
+  };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+    <View style={styles.container}>
       <Header
-        backgroundImageStyle={{}}
-        barStyle="default"
         centerComponent={{
-          text: 'IH Challenge',
-          style: {color: '#fff'},
+          text: 'Star Wars Quiz',
+          style: {color: '#fff', fontSize: 25},
         }}
-        centerContainerStyle={{}}
-        leftComponent={{icon: 'menu', color: '#fff'}}
-        leftContainerStyle={{}}
-        linearGradientProps={{}}
-        placement="center"
-        rightComponent={{icon: 'home', color: '#fff'}}
-        rightContainerStyle={{}}
-        statusBarProps={{}}
       />
-      <View
-        style={{
-          backgroundColor: isDarkMode ? Colors.black : Colors.white,
-        }}>
-        <FlatList
-          data={data?.allPeople?.edges}
-          renderItem={({item: edge}) => (
-            <ListItem Component={TouchableHighlight} key={edge?.node?.id}>
-              <ListItem.Content>
-                <ListItem.Title>{edge?.node?.name}</ListItem.Title>
-              </ListItem.Content>
-            </ListItem>
-          )}></FlatList>
-      </View>
-    </SafeAreaView>
+      <SafeAreaView style={backgroundStyle}>
+        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+        <View style={[styles.innerContainer, { backgroundColor: isDarkMode ? Colors.black : Colors.white }]}>
+            {!quizStarted 
+              ? <Button onPress={() => setQuizStarted(!quizStarted)} title={'Start Quiz'} /> 
+              : null}
+            {(peopleQueryLoading || planetsQueryLoading) && quizStarted 
+              ? <Text>Loading...</Text> 
+              : renderQuiz()}
+        </View>
+      </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  innerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
