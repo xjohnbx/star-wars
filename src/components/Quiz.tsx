@@ -23,10 +23,8 @@ const Quiz: React.FC<QuizProps> = ({ peopleArray, planetsArray }: QuizProps): JS
     }, [peopleArray, planetsArray]);
 
     useEffect(() => {
-      if (planetsArray) {
-        let answers = createAnswerArray();
-        setCurrentAnswers(answers);
-      }
+      let answers = createAnswerArray();
+      setCurrentAnswers(answers);
     }, [currentPersonInQuestion])
 
     const nextQuestionHandler = (correctAnswer: boolean) => {
@@ -79,21 +77,15 @@ const Quiz: React.FC<QuizProps> = ({ peopleArray, planetsArray }: QuizProps): JS
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.quizContainer}>
-              <Text style={styles.summaryText}> Q: {questionCount} / {peopleArray?.length ?? 0}</Text>
-              {currentPersonInQuestion ? <QuizCard personInQuestion={currentPersonInQuestion} answerOptions={currentAnswers} onNextQuestion={nextQuestionHandler} /> : null}
-              <Text style={styles.summaryText}> Results: {correctCount} / {questionCount - 1}</Text>
-            </View>
-        </View>
+      <View style={styles.quizContainer}>
+        <Text style={styles.summaryText}> Q: {questionCount} / {peopleArray?.length ?? 0}</Text>
+        {currentPersonInQuestion ? <QuizCard personInQuestion={currentPersonInQuestion} answerOptions={currentAnswers} onNextQuestion={nextQuestionHandler} /> : null}
+        <Text style={styles.summaryText}> Results: {correctCount} / {questionCount - 1}</Text>
+      </View>
     );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   summaryText: {
     fontSize: 15,
   },
@@ -108,22 +100,28 @@ export default Quiz;
 
 /**
  * Next Features:
- *  1) Currently we only ask Person -> Planet. Add more connections:
+ *  1) TESTS - jest was being finicky and giving some dependency errors. Amongst other things that were going wrong regarding tests.
+ * 
+ *  2) Currently we only ask Person -> Planet. Add more connections:
  *      - Person -> Ship
  *      - Person -> Species
  *      - etc.
  *
- *  2) Put a limit on the amount of Questions. (82 is a lot)
+ *  3) Put a limit on the amount of Questions. (82 is a lot)
  *      - This also takes care of a bug when trying to generate a name after 82 questions.
  *        The id array is completely full and would not allow for a random name to be generated.
  * 
- *  3) Highlight the correct answer if the user gets the question wrong.
+ *  4) Highlight the correct answer if the user gets the question wrong.
  *      - Maybe do this by way of highlighting the text in green if they miss it
  * 
- *  4) Kind of an extension of number 2, but some sort of end screen where is displays at the end of the last question.
+ *  5) Similar to (4) we should have some kind of indicator on the buttons when they get disabled. Either graying them out and just leaving the 'red' or 'green' border.
  * 
- *  5) If there was a database to hit, Keep a high score record.
+ *  6) Kind of an extension of number 2, but some sort of end screen where is displays at the end of the last question.
  * 
+ *  7) If there was a database to hit, Keep a high score record.
+ * 
+ *  8) Create a route to go back to the homescreen
+ *    - This would involve adding a navigation functionality
  * 
  * Known Bugs:
  *  1) From (2 above): Generating a name after 82 have passed is impossible. The app doesn't crash, but a card never renders.

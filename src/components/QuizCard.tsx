@@ -56,7 +56,7 @@ const QuizCard: React.FC<QuizCardProps> = ({ answerOptions, personInQuestion, on
             <View style={styles.answerContainer}>
                 <View style={styles.row}>
                     {/* Answer0*/}
-                    <TouchableOpacity style={[styles.answerButton, { borderWidth: 2, borderColor: buttonStates.answer0}]} onPress={() => answerButtonHandler('answer0', answerOptions[0]?.name ?? 'No Answer')} disabled={questionAnswered}>
+                    <TouchableOpacity style={[styles.answerButton, { borderWidth: 2, borderColor: buttonStates.answer0 }]} onPress={() => answerButtonHandler('answer0', answerOptions[0]?.name ?? 'No Answer')} disabled={questionAnswered}>
                         <Text style={styles.answerText} numberOfLines={1} adjustsFontSizeToFit>{answerOptions[0]?.name ?? 'No Answer'}</Text>
                     </TouchableOpacity>
                     {/* Answer1 */}
@@ -82,21 +82,21 @@ const QuizCard: React.FC<QuizCardProps> = ({ answerOptions, personInQuestion, on
         <View style={styles.outerContainer}>
             <Card containerStyle={styles.cardContainer}>
                 <View style={{ flex: 1, minWidth: 200, padding: 10, }}>
-                <Card.Title style={{ flexShrink: 1, }}>
-                    {`What planet is ${personInQuestion?.name ?? 'Yoda'} from?`}
-                </Card.Title>
-                <Card.Divider />
-                {renderAnswers()}
-                <Button
-                    title="Next Question"
-                    disabled={!questionAnswered}
-                    buttonStyle={{
-                        borderColor: 'rgba(78, 116, 289, 1)',
-                    }}
-                    type="outline"
-                    raised
-                    onPress={nextQuestionButtonHandler}
-                />
+                    <Card.Title style={{ flexShrink: 1, }}>
+                        {`What planet is ${personInQuestion?.name ?? 'Yoda'} from?`}
+                    </Card.Title>
+                    <Card.Divider />
+                    {renderAnswers()}
+                    <Button
+                        title="Next Question"
+                        disabled={!questionAnswered}
+                        buttonStyle={{
+                            borderColor: 'rgba(78, 116, 289, 1)',
+                        }}
+                        type="outline"
+                        raised
+                        onPress={nextQuestionButtonHandler}
+                    />
                 </View>
             </Card>
 
