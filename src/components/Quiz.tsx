@@ -114,7 +114,7 @@ export default Quiz;
  *  4) Highlight the correct answer if the user gets the question wrong.
  *      - Maybe do this by way of highlighting the text in green if they miss it
  * 
- *  5) Similar to (4) we should have some kind of indicator on the buttons when they get disabled. Either graying them out and just leaving the 'red' or 'green' border.
+ *  5) *** Done *** Similar to (4) we should have some kind of indicator on the buttons when they get disabled. Either graying them out and just leaving the 'red' or 'green' border.
  * 
  *  6) Kind of an extension of number 2, but some sort of end screen where is displays at the end of the last question.
  * 
@@ -132,7 +132,7 @@ export default Quiz;
  *  1) My GraphQL  knowledge is limited, the way I pull these in and then copy and type into another array is bad.
  *        - Learning how GraphQL works more in depth / understanding the Connection and Edge types would help resolve this.
  *  
- *  2) In 'QuizCard.tsx' the renderAnswers function could be refactored. Specifically around the AnswerButtons. These are repeated 4 times, which is bad coding.
+ *  2) *** Done *** In 'QuizCard.tsx' the renderAnswers function could be refactored. Specifically around the AnswerButtons. These are repeated 4 times, which is bad coding.
  *      I was having some issues when getting the buttons to highlight within a re-usable component.
  * 
  *  3) Some of the UI elements have hardcoded minWidth and minHeight values. If given a super small screen, these may create a view issues.

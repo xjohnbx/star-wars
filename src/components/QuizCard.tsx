@@ -17,10 +17,15 @@ type AnswerButtonProps = {
 }
 
 type ButtonStates = {
-    answer0: { clicked: boolean; borderColor: string; };
-    answer1: { clicked: boolean; borderColor: string; };
-    answer2: { clicked: boolean; borderColor: string; };
-    answer3: { clicked: boolean; borderColor: string; };
+    answer0: ButtonState;
+    answer1: ButtonState;
+    answer2: ButtonState;
+    answer3: ButtonState;
+}
+
+type ButtonState = {
+    clicked: boolean;
+    borderColor: string;
 }
 
 const QuizCard: React.FC<QuizCardProps> = ({ answerOptions, personInQuestion, onNextQuestion }: QuizCardProps) => {
@@ -39,14 +44,28 @@ const QuizCard: React.FC<QuizCardProps> = ({ answerOptions, personInQuestion, on
         console.log("Correct Answer: " + personInQuestion?.homeworld?.name);
     }, [personInQuestion])
 
+    const getBackgroundColor = (clicked: boolean, correctAnswer: boolean): string => {
+        const disabledColor: string = 'rgba(125, 125, 125, 0.3)';
+        const successColor: string = '#4cd964';
+        const failColor: string = '#ff3b30';
+
+        if (clicked) {
+            return correctAnswer ? successColor : failColor;
+        }
+
+        return disabledColor;
+    };
+
     const answerButtonHandler = (buttonName: keyof ButtonStates, title: string) => {
         const correctAnswer = title === personInQuestion?.homeworld?.name;
 
         setIsCorrectAnswer(correctAnswer);
         setQuestionAnswered(true);
-        setButtonStates((prevButtonStates) => ({
-            ...prevButtonStates,
-            [buttonName]: { clicked: true, borderColor: correctAnswer ? '#4cd964' : '#ff3b30' },
+        setButtonStates(() => ({
+            answer0: { clicked: buttonName === 'answer0' ? true : false, borderColor: getBackgroundColor(buttonName === 'answer0' ? true : false, correctAnswer) },
+            answer1: { clicked: buttonName === 'answer1' ? true : false, borderColor: getBackgroundColor(buttonName === 'answer1' ? true : false, correctAnswer) },
+            answer2: { clicked: buttonName === 'answer2' ? true : false, borderColor: getBackgroundColor(buttonName === 'answer2' ? true : false, correctAnswer) },
+            answer3: { clicked: buttonName === 'answer3' ? true : false, borderColor: getBackgroundColor(buttonName === 'answer3' ? true : false, correctAnswer) }
         }));
     };
 
@@ -82,8 +101,8 @@ const QuizCard: React.FC<QuizCardProps> = ({ answerOptions, personInQuestion, on
     return (
         <View style={styles.outerContainer}>
             <Card containerStyle={styles.cardContainer}>
-                <View style={{ flex: 1, minWidth: 200, padding: 10, }}>
-                    <Card.Title style={{ flexShrink: 1, }}>
+                <View style={{ flex: 1, minWidth: 200, padding: 10 }}>
+                    <Card.Title>
                         {`What planet is ${personInQuestion?.name ?? 'Yoda'} from?`}
                     </Card.Title>
                     <Card.Divider />
