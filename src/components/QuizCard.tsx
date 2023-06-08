@@ -11,19 +11,24 @@ type QuizCardProps = {
     onNextQuestion: (correctAnswer: boolean) => void;
 };
 
+type AnswerButtonProps = {
+    answerButton: keyof ButtonStates;
+    title: string;
+}
+
 type ButtonStates = {
-    answer0: string;
-    answer1: string;
-    answer2: string;
-    answer3: string;
+    answer0: { clicked: boolean; borderColor: string; };
+    answer1: { clicked: boolean; borderColor: string; };
+    answer2: { clicked: boolean; borderColor: string; };
+    answer3: { clicked: boolean; borderColor: string; };
 }
 
 const QuizCard: React.FC<QuizCardProps> = ({ answerOptions, personInQuestion, onNextQuestion }: QuizCardProps) => {
     const initialButtonStates: ButtonStates = {
-        answer0: 'rgba(0, 123, 255, 0.3)',
-        answer1: 'rgba(0, 123, 255, 0.3)',
-        answer2: 'rgba(0, 123, 255, 0.3)',
-        answer3: 'rgba(0, 123, 255, 0.3)',
+        answer0: { clicked: false, borderColor: 'rgba(0, 123, 255, 0.3)' },
+        answer1: { clicked: false, borderColor: 'rgba(0, 123, 255, 0.3)' },
+        answer2: { clicked: false, borderColor: 'rgba(0, 123, 255, 0.3)' },
+        answer3: { clicked: false, borderColor: 'rgba(0, 123, 255, 0.3)' },
     };
 
     const [buttonStates, setButtonStates] = useState<ButtonStates>(initialButtonStates);
@@ -41,7 +46,7 @@ const QuizCard: React.FC<QuizCardProps> = ({ answerOptions, personInQuestion, on
         setQuestionAnswered(true);
         setButtonStates((prevButtonStates) => ({
             ...prevButtonStates,
-            [buttonName]: correctAnswer ? '#4cd964' : '#ff3b30'
+            [buttonName]: { clicked: true, borderColor: correctAnswer ? '#4cd964' : '#ff3b30' },
         }));
     };
 
@@ -51,28 +56,24 @@ const QuizCard: React.FC<QuizCardProps> = ({ answerOptions, personInQuestion, on
         onNextQuestion(isCorrectAnswer);
     };
 
+    const AnswerButton = ({ answerButton, title }: AnswerButtonProps): JSX.Element => {
+        return (
+            <TouchableOpacity style={[styles.answerButton, { borderColor: buttonStates[answerButton].borderColor }]} onPress={() => answerButtonHandler(answerButton, title)} disabled={questionAnswered}>
+                <Text style={styles.answerText} numberOfLines={1} adjustsFontSizeToFit>{title}</Text>
+            </TouchableOpacity>
+        );
+    };
+
     const renderAnswers = () => {
         return (
             <View style={styles.answerContainer}>
                 <View style={styles.row}>
-                    {/* Answer0*/}
-                    <TouchableOpacity style={[styles.answerButton, { borderWidth: 2, borderColor: buttonStates.answer0 }]} onPress={() => answerButtonHandler('answer0', answerOptions[0]?.name ?? 'No Answer')} disabled={questionAnswered}>
-                        <Text style={styles.answerText} numberOfLines={1} adjustsFontSizeToFit>{answerOptions[0]?.name ?? 'No Answer'}</Text>
-                    </TouchableOpacity>
-                    {/* Answer1 */}
-                    <TouchableOpacity style={[styles.answerButton, { borderWidth: 2, borderColor: buttonStates.answer1 }]} onPress={() => answerButtonHandler('answer1', answerOptions[1]?.name ?? 'No Answer')} disabled={questionAnswered}>
-                        <Text style={styles.answerText} numberOfLines={1} adjustsFontSizeToFit>{answerOptions[1]?.name ?? 'No Answer'}</Text>
-                    </TouchableOpacity>
+                    <AnswerButton answerButton={'answer0'} title={answerOptions[0]?.name ?? 'No Answer'} />
+                    <AnswerButton answerButton={'answer1'} title={answerOptions[1]?.name ?? 'No Answer'} />
                 </View>
                 <View style={styles.row}>
-                    {/* Answer2 */}
-                    <TouchableOpacity style={[styles.answerButton, { borderWidth: 2, borderColor: buttonStates.answer2 }]} onPress={() => answerButtonHandler('answer2', answerOptions[2]?.name ?? 'No Answer')} disabled={questionAnswered}>
-                        <Text style={styles.answerText} numberOfLines={1} adjustsFontSizeToFit>{answerOptions[2]?.name ?? 'No Answer'}</Text>
-                    </TouchableOpacity>
-                    {/* Answer3 */}
-                    <TouchableOpacity style={[styles.answerButton, { borderWidth: 2, borderColor: buttonStates.answer3 }]} onPress={() => answerButtonHandler('answer3', answerOptions[3]?.name ?? 'No Answer')} disabled={questionAnswered}>
-                        <Text style={styles.answerText} numberOfLines={1} adjustsFontSizeToFit>{answerOptions[3]?.name ?? 'No Answer'}</Text>
-                    </TouchableOpacity>
+                    <AnswerButton answerButton={'answer2'} title={answerOptions[2]?.name ?? 'No Answer'} />
+                    <AnswerButton answerButton={'answer3'} title={answerOptions[3]?.name ?? 'No Answer'} />
                 </View>
             </View>
         );
@@ -110,6 +111,7 @@ const styles = StyleSheet.create({
         minWidth: 150,
         margin: 8,
         borderRadius: 5,
+        borderWidth: 2,
         justifyContent: 'center',
         alignItems: 'center',
     },
