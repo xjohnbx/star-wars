@@ -37,7 +37,7 @@ const Quiz: React.FC<QuizProps> = ({ peopleArray, planetsArray }: QuizProps): JS
 
 
     const setRandomPerson = () => {
-        // Make sure we don't ask the same quetsion again
+        // Filter out people we have already asked about
         const availablePeopleToChoose: Person[] = peopleArray.filter((person: Person) => !idInQuestionsArray.includes(person.id));
 
         // Random index
