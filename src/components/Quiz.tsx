@@ -37,15 +37,20 @@ const Quiz: React.FC<QuizProps> = ({ peopleArray, planetsArray }: QuizProps): JS
 
 
     const setRandomPerson = () => {
+        // Make sure we don't ask the same quetsion again
         const availablePeopleToChoose: Person[] = peopleArray.filter((person: Person) => !idInQuestionsArray.includes(person.id));
+
+        // Random index
         const random: number = Math.floor(Math.random() * availablePeopleToChoose?.length);
         const randomPerson: Person = availablePeopleToChoose[random];
         
+        // Add id to asked questions
         setIdInQuestionsArray(prevState => [...prevState, randomPerson?.id]);
         setCurrentPersonInQuestion(randomPerson);
     };
 
     const createAnswerArray = (): Planet[] => {
+        // Make sure we don't randomly select the persons's homePlanet
         const newAnswerArray: Planet[] = planetsArray.filter((planet: Planet) => currentPersonInQuestion?.homeworld?.id !== planet?.id);
         let currentIndex: number = newAnswerArray.length;
 
@@ -111,7 +116,7 @@ export default Quiz;
  *      - This also takes care of a bug when trying to generate a name after 82 questions.
  *        The id array is completely full and would not allow for a random name to be generated.
  * 
- *  4) Highlight the correct answer if the user gets the question wrong.
+ *  4) *** Done *** Highlight the correct answer if the user gets the question wrong.
  *      - Maybe do this by way of highlighting the text in green if they miss it
  * 
  *  5) *** Done *** Similar to (4) we should have some kind of indicator on the buttons when they get disabled. Either graying them out and just leaving the 'red' or 'green' border.

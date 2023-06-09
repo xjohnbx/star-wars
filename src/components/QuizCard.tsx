@@ -13,7 +13,6 @@ type QuizCardProps = {
 
 type AnswerButtonProps = {
     answerButton: keyof ButtonStates;
-    title: string;
 }
 
 type ButtonStates = {
@@ -26,59 +25,84 @@ type ButtonStates = {
 type ButtonState = {
     clicked: boolean;
     borderColor: string;
+    textColor: string;
+    title: string;
 }
 
 const QuizCard: React.FC<QuizCardProps> = ({ answerOptions, personInQuestion, onNextQuestion }: QuizCardProps) => {
-    const initialButtonStates: ButtonStates = {
-        answer0: { clicked: false, borderColor: 'rgba(0, 123, 255, 0.3)' },
-        answer1: { clicked: false, borderColor: 'rgba(0, 123, 255, 0.3)' },
-        answer2: { clicked: false, borderColor: 'rgba(0, 123, 255, 0.3)' },
-        answer3: { clicked: false, borderColor: 'rgba(0, 123, 255, 0.3)' },
-    };
-
-    const [buttonStates, setButtonStates] = useState<ButtonStates>(initialButtonStates);
+    const [buttonStates, setButtonStates] = useState<ButtonStates>({
+        answer0: { clicked: false, borderColor: 'rgba(0, 123, 255, 0.3)', textColor: 'black', title: answerOptions[0]?.name ?? 'No Answer' },
+        answer1: { clicked: false, borderColor: 'rgba(0, 123, 255, 0.3)', textColor: 'black', title: answerOptions[1]?.name ?? 'No Answer' },
+        answer2: { clicked: false, borderColor: 'rgba(0, 123, 255, 0.3)', textColor: 'black', title: answerOptions[2]?.name ?? 'No Answer' },
+        answer3: { clicked: false, borderColor: 'rgba(0, 123, 255, 0.3)', textColor: 'black', title: answerOptions[3]?.name ?? 'No Answer' },
+    });
     const [questionAnswered, setQuestionAnswered] = useState<boolean>(false);
     const [isCorrectAnswer, setIsCorrectAnswer] = useState<boolean>(false);
     
     useEffect(() => {
         console.log("Correct Answer: " + personInQuestion?.homeworld?.name);
-    }, [personInQuestion])
+    }, [personInQuestion]);
 
-    const getBackgroundColor = (clicked: boolean, correctAnswer: boolean): string => {
-        const disabledColor: string = 'rgba(125, 125, 125, 0.3)';
-        const successColor: string = '#4cd964';
-        const failColor: string = '#ff3b30';
+    useEffect(() => {
 
+        // If answer options or personInQuestion has changed make sure button choices are in sync
+        setButtonStates({
+            answer0: { clicked: false, borderColor: 'rgba(0, 123, 255, 0.3)', textColor: 'black', title: answerOptions[0]?.name ?? 'No Answer' },
+            answer1: { clicked: false, borderColor: 'rgba(0, 123, 255, 0.3)', textColor: 'black', title: answerOptions[1]?.name ?? 'No Answer' },
+            answer2: { clicked: false, borderColor: 'rgba(0, 123, 255, 0.3)', textColor: 'black', title: answerOptions[2]?.name ?? 'No Answer' },
+            answer3: { clicked: false, borderColor: 'rgba(0, 123, 255, 0.3)', textColor: 'black', title: answerOptions[3]?.name ?? 'No Answer' },
+        });
+    }, [answerOptions, personInQuestion])
+
+    const calculateButtonState = (clicked: boolean, correctAnswer: boolean, title: string): ButtonState => {
+        const disabledColor: string = 'rgba(125, 125, 125, 0.3)'; // gray
+        const successColor: string = '#4cd964'; // green
+        const failColor: string = '#ff3b30'; // red
+
+        // if user chosen answer
         if (clicked) {
-            return correctAnswer ? successColor : failColor;
+            return { 
+                clicked: clicked, 
+                borderColor: correctAnswer ? successColor : failColor, 
+                textColor: correctAnswer ? successColor : failColor,
+                title: title,
+            };
         }
 
-        return disabledColor;
+        return { 
+            clicked: clicked, 
+            borderColor: disabledColor,
+            textColor: title === personInQuestion?.homeworld?.name ? successColor : 'rgb(125, 125, 125)', // is it the right answer?
+            title: title
+        };
     };
 
-    const answerButtonHandler = (buttonName: keyof ButtonStates, title: string) => {
-        const correctAnswer = title === personInQuestion?.homeworld?.name;
+    const answerButtonHandler = (buttonName: keyof ButtonStates) => {
+        const correctAnswer = buttonStates[buttonName].title === personInQuestion?.homeworld?.name;
 
         setIsCorrectAnswer(correctAnswer);
+        
+        // disable answer buttons + enable nextQuestion button
         setQuestionAnswered(true);
-        setButtonStates(() => ({
-            answer0: { clicked: buttonName === 'answer0' ? true : false, borderColor: getBackgroundColor(buttonName === 'answer0' ? true : false, correctAnswer) },
-            answer1: { clicked: buttonName === 'answer1' ? true : false, borderColor: getBackgroundColor(buttonName === 'answer1' ? true : false, correctAnswer) },
-            answer2: { clicked: buttonName === 'answer2' ? true : false, borderColor: getBackgroundColor(buttonName === 'answer2' ? true : false, correctAnswer) },
-            answer3: { clicked: buttonName === 'answer3' ? true : false, borderColor: getBackgroundColor(buttonName === 'answer3' ? true : false, correctAnswer) }
+        setButtonStates(() => ({     
+            answer0: calculateButtonState(buttonName === 'answer0' ? true : false, correctAnswer, buttonStates['answer0'].title),
+            answer1: calculateButtonState(buttonName === 'answer1' ? true : false, correctAnswer, buttonStates['answer1'].title),
+            answer2: calculateButtonState(buttonName === 'answer2' ? true : false, correctAnswer, buttonStates['answer2'].title),
+            answer3: calculateButtonState(buttonName === 'answer3' ? true : false, correctAnswer, buttonStates['answer3'].title),
         }));
     };
 
     const nextQuestionButtonHandler = () => {
-        setButtonStates(initialButtonStates);
+
+        // reset buttons to be enabled for next Question
         setQuestionAnswered(false);
         onNextQuestion(isCorrectAnswer);
     };
 
-    const AnswerButton = ({ answerButton, title }: AnswerButtonProps): JSX.Element => {
+    const AnswerButton = ({ answerButton }: AnswerButtonProps): JSX.Element => {
         return (
-            <TouchableOpacity style={[styles.answerButton, { borderColor: buttonStates[answerButton].borderColor }]} onPress={() => answerButtonHandler(answerButton, title)} disabled={questionAnswered}>
-                <Text style={styles.answerText} numberOfLines={1} adjustsFontSizeToFit>{title}</Text>
+            <TouchableOpacity style={[styles.answerButton, { borderColor: buttonStates[answerButton].borderColor }]} onPress={() => answerButtonHandler(answerButton)} disabled={questionAnswered}>
+                <Text style={[styles.answerText, { color: buttonStates[answerButton].textColor }]} numberOfLines={1} adjustsFontSizeToFit>{buttonStates[answerButton].title}</Text>
             </TouchableOpacity>
         );
     };
@@ -87,12 +111,12 @@ const QuizCard: React.FC<QuizCardProps> = ({ answerOptions, personInQuestion, on
         return (
             <View style={styles.answerContainer}>
                 <View style={styles.row}>
-                    <AnswerButton answerButton={'answer0'} title={answerOptions[0]?.name ?? 'No Answer'} />
-                    <AnswerButton answerButton={'answer1'} title={answerOptions[1]?.name ?? 'No Answer'} />
+                    <AnswerButton answerButton={'answer0'} />
+                    <AnswerButton answerButton={'answer1'} />
                 </View>
                 <View style={styles.row}>
-                    <AnswerButton answerButton={'answer2'} title={answerOptions[2]?.name ?? 'No Answer'} />
-                    <AnswerButton answerButton={'answer3'} title={answerOptions[3]?.name ?? 'No Answer'} />
+                    <AnswerButton answerButton={'answer2'} />
+                    <AnswerButton answerButton={'answer3'} />
                 </View>
             </View>
         );

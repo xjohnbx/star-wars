@@ -85,9 +85,13 @@ const App = () => {
       <SafeAreaView style={backgroundStyle}>
         <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
         <View style={[styles.innerContainer, { backgroundColor: isDarkMode ? Colors.black : Colors.white }]}>
+
+            {/* Show Start button if quiz is not started */}
             {!quizStarted 
               ? <Button onPress={() => setQuizStarted(!quizStarted)} title={'Start Quiz'} /> 
               : null}
+
+            {/* If quiz is started, but queries haven't finished yet, show Loading... */}
             {(peopleQueryLoading || planetsQueryLoading) && quizStarted 
               ? <Text>Loading...</Text> 
               : renderQuiz()}
