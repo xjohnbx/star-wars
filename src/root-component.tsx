@@ -15,7 +15,6 @@ import {
   StyleSheet,
   useColorScheme,
   View,
-
 } from 'react-native';
 import { Button, Header } from '@rneui/themed';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
@@ -42,13 +41,13 @@ const PEOPLE_QUERY = gql`
 
 const PLANET_QUERY = gql` 
 {
-    allPlanets {
-            planets {
-              id
-              name
-            }
-          }
-        }
+  allPlanets {
+    planets {
+      id
+      name
+    }
+  }
+}
 `
 
 const App = () => {
